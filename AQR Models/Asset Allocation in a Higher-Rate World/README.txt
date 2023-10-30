@@ -1,0 +1,1 @@
+This model is my interpretation of AQR's model within their paper, "Asset Allocation in a Higher-Rate World".
