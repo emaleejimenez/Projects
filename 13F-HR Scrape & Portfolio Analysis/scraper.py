@@ -24,11 +24,11 @@ from xml.etree import ElementTree as ET
 import fnmatch
 
 # Headers need to be declared in order for the SEC API to allow a connection
-headers = {'User-Agent': "jniamien@weioffice.com",
+headers = {'User-Agent': "jimenezemalee@gmail.com",
 			"Accept-Encoding": "gzip, deflate" }
 
 fname = 'xml_13f'
-desktop_path = 'Z:\\WIT Market Research & Projects\\Portfolio Management Team\\Adhoc Projects\\13F-HR Scrape\\' 
+desktop_path = 'C:\\MY_FILE_PATH\\13F-HR Scrape\\' 
 cusip_to_ticker_file = os.path.join(desktop_path, 'cusip_to_ticker.xlsx')
 
 # Check if output directory exists. if not, then create it
