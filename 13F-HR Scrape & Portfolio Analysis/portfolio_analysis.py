@@ -4,7 +4,6 @@ Created on Fri May 17 10:59:38 2024
 
 @author: ejimenez
 
-This script uses the 
 """
 
 import sys
@@ -15,7 +14,7 @@ from datetime import datetime
 import yfinance as yf
 
 # Define the path to the directory containing scraper.py
-desktop_path = 'Z:\\WIT Market Research & Projects\\Portfolio Management Team\\Adhoc Projects\\13F-HR Scrape\\'
+desktop_path = 'C:\\MY_FILE_PATH\\13F-HR Scrape\\'
 
 # Add the directory to the system path
 sys.path.append(desktop_path)
