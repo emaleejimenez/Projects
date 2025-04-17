@@ -17,7 +17,7 @@ inputs = {
     'expected_call_rate_at_year_x': 0.90,  # % of total calls expected by "year X"
     'expected_call_rate_year': 5,         # The "year X" in which we expect 90% of calls
     'fund_life': 13,                      # Fund lifespan in years
-    'expected_return': 0.097,             # Annual expected growth rate (JPM CMA assumption)
+    'expected_return': 0.20,             # Annual expected growth rate (JPM CMA assumption)
     'commitment': 100.0,                  # Total commitment in millions
     'bow_factor': 1.2,                    # Bow factor for distribution ramp shape
     'yield_rate': 0.00                    # Minimum "yield-like" distribution rate
@@ -136,9 +136,89 @@ class Takahashi_Alexander:
         # Adding cumulative distributions
         capital_distributions_df['cumulative_distributions'] = capital_distributions_df['distributions'].cumsum()
         
-        total_return = (capital_distributions_df['cumulative_distributions'].iloc[-1] - self.commitment) / self.commitment
+        self.capital_distributions_df = capital_distributions_df
+        
+        self.total_return = (capital_distributions_df['cumulative_distributions'].iloc[-1] - self.commitment) / self.commitment
         
         return capital_distributions_df, total_return
+    
+    def plot(self):
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        # 1) Plot cumulative calls
+        ax.plot(
+            self.capital_call_df.index,
+            self.capital_call_df['cumulative_calls'],
+            label='Called - Cumulative',
+            color='tab:blue',
+            lw=2
+        )
+        ax.fill_between(
+            self.capital_call_df.index,
+            0,
+            self.capital_call_df['cumulative_calls'],
+            color='tab:blue',
+            alpha=0.15
+        )
+
+        # 2) Plot cumulative distributions
+        ax.plot(
+            self.capital_distributions_df.index,
+            self.capital_distributions_df['cumulative_distributions'],
+            label='Distributed - Cumulative',
+            color='tab:orange',
+            lw=2
+        )
+        ax.fill_between(
+            self.capital_distributions_df.index,
+            0,
+            self.capital_distributions_df['cumulative_distributions'],
+            color='tab:orange',
+            alpha=0.15
+        )
+
+        # 3) Plot NAV
+        ax.plot(
+            self.capital_distributions_df.index,
+            self.capital_distributions_df['nav'],
+            label='Closing NAV',
+            color='tab:green',
+            lw=2
+        )
+        ax.fill_between(
+            self.capital_distributions_df.index,
+            0,
+            self.capital_distributions_df['nav'],
+            color='tab:green',
+            alpha=0.15
+        )
+
+        plt.subplots_adjust(bottom=0.2)
+
+        ax.set_xlabel('Years')
+        ax.set_ylabel('$ Millions')
+        ax.set_title('Takahashi–Alexander Private Investment Pacing Model')
+        ax.legend()
+
+        # Adding the total return text below x-axis
+        ax.text(
+            0.5, -0.25,
+            f"Total Return = {self.total_return * 100:.2f}%",
+            transform=ax.transAxes,
+            ha='center',
+            va='top'
+        )
+
+        # Tweak the x-axis to use integer year ticks
+        ax.xaxis.set_major_locator(MultipleLocator(1))  # tick every 1 year
+
+        # Format y-axis 
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+
+        # Grid lines
+        ax.grid(True, which='major', alpha=0.4)   # major grid
+
+        plt.show()
 
 #%% Run Model
 
@@ -146,83 +226,9 @@ class Takahashi_Alexander:
 ta_model = Takahashi_Alexander(inputs)
 capital_distributions_df = ta_model.calc_distributions()
 
+# plot
+ta_model.plot()
+
 # Unpack the data
-dist_df, total_return = capital_distributions_df   # DataFrame and single float
-calls_df = ta_model.capital_call_df                # 'cumulative_calls'
-
-fig, ax = plt.subplots(figsize=(8, 5))
-
-# 1) Plot cumulative calls
-ax.plot(
-    calls_df.index,
-    calls_df['cumulative_calls'],
-    label='Called - Cumulative',
-    color='tab:blue',
-    lw=2
-)
-ax.fill_between(
-    calls_df.index,
-    0,
-    calls_df['cumulative_calls'],
-    color='tab:blue',
-    alpha=0.15
-)
-
-# 2) Plot cumulative distributions
-ax.plot(
-    dist_df.index,
-    dist_df['cumulative_distributions'],
-    label='Distributed - Cumulative',
-    color='tab:orange',
-    lw=2
-)
-ax.fill_between(
-    dist_df.index,
-    0,
-    dist_df['cumulative_distributions'],
-    color='tab:orange',
-    alpha=0.15
-)
-
-# 3) Plot NAV
-ax.plot(
-    dist_df.index,
-    dist_df['nav'],
-    label='Closing NAV',
-    color='tab:green',
-    lw=2
-)
-ax.fill_between(
-    dist_df.index,
-    0,
-    dist_df['nav'],
-    color='tab:green',
-    alpha=0.15
-)
-
-plt.subplots_adjust(bottom=0.2)
-
-ax.set_xlabel('Years')
-ax.set_ylabel('$ Millions')
-ax.set_title('Takahashi–Alexander Private Investment Pacing Model')
-ax.legend()
-
-# Adding the total return text below x-axis
-ax.text(
-    0.5, -0.25,
-    f"Total Return = {total_return * 100:.2f}%",
-    transform=ax.transAxes,
-    ha='center',
-    va='top'
-)
-
-# Tweak the x-axis to use integer year ticks
-ax.xaxis.set_major_locator(MultipleLocator(1))  # tick every 1 year
-
-# Format y-axis 
-ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-
-# Grid lines
-ax.grid(True, which='major', alpha=0.4)   # major grid
-
-plt.show()
+dist_df, total_return = capital_distributions_df
+calls_df = ta_model.capital_call_df
