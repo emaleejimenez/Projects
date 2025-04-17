@@ -204,7 +204,7 @@ plt.subplots_adjust(bottom=0.2)
 
 ax.set_xlabel('Years')
 ax.set_ylabel('$ Millions')
-ax.set_title('Takahashi–Alexander Model: Calls, Distributions, NAV, Total Return')
+ax.set_title('Takahashi–Alexander Private Investment Pacing Model')
 ax.legend()
 
 # Adding the total return text below x-axis
