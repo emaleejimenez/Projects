@@ -24,6 +24,7 @@ inputs = {
 }
 
 class Takahashi_Alexander:
+    
     def __init__(self, inputs):
         
         # Store inputs as instance attributes
@@ -138,7 +139,9 @@ class Takahashi_Alexander:
         
         self.capital_distributions_df = capital_distributions_df
         
-        self.total_return = (capital_distributions_df['cumulative_distributions'].iloc[-1] - self.commitment) / self.commitment
+        total_return = (capital_distributions_df['cumulative_distributions'].iloc[-1] - self.commitment) / self.commitment
+        
+        self.total_return = total_return
         
         return capital_distributions_df, total_return
     
